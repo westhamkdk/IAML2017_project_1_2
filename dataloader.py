@@ -34,7 +34,7 @@ class DataLoader():
 
         self.num_batch = int(len(self.metadata_df) / self.batch_size)
         self.pointer = 0
-        self.label_dict = {k: v for v,k in enumerate(set(self.metadata_df[self.label_column_name].values))}
+        self.label_dict = {k: v for v,k in enumerate(sorted(set(self.metadata_df[self.label_column_name].values)))}
 
     def next_batch(self):
         '''
@@ -47,19 +47,23 @@ class DataLoader():
         meta_df = self.metadata_df.iloc[start_pos:(start_pos+self.batch_size)]
         # TODO: load features
         track_ids = meta_df['track_id'].values
-        return features.compute_mfcc_example(track_ids), self.convertLabels(meta_df)
+        valid_ids, valid_features = features.compute_mfcc_example(track_ids)
+        valid_df = meta_df[meta_df['track_id'].isin(valid_ids)]
+
+        return valid_features, self.convert_labels(valid_df)
 
     def reset_pointer(self):
         self.pointer = 0
 
     def convert_labels(self, meta_df):
+
         '''
 
         :param meta_df: metadata (as pandas DataFrame)
         :return: numpy array with (batch_size, number of genres) shape. one-hot encoded
         '''
         # create one-hot encoded array
-        label_array = np.zeros((self.batch_size, len(self.label_dict)))
+        label_array = np.zeros((len(meta_df), len(self.label_dict)))
         labels = meta_df[self.label_column_name].values
         for i, label in enumerate(labels):
             label_pos = self.label_dict.get(label)
@@ -72,12 +76,14 @@ if __name__ == "__main__":
     training_loader = DataLoader('dataset/track_metadata.csv', 32, 'track_genre_top', is_training=True)
     valid_loader = DataLoader('dataset/track_metadata.csv', 32, 'track_genre_top', is_training=False)
 
+
     for _ in range(training_loader.num_batch):
-        track_ids, label_onehot = training_loader.next_batch()
+        track_features, label_onehot = training_loader.next_batch()
 
     for _ in range(valid_loader.num_batch):
-        track_ids, label_onehot = valid_loader.next_batch()
-        print(track_ids, label_onehot)
+        track_features, label_onehot = valid_loader.next_batch()
+
+
 
 
 

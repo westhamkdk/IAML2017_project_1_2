@@ -20,30 +20,37 @@ def get_mfcc_example(tids):
 
     return np.array(mfcc_list)
 
-def compute_mfcc_example(tid):
+def compute_mfcc_example(tids):
     threshold = 1278900
-    try:
-        filepath = get_audio_path('music/music_training', tid)
-        x, sr = librosa.load(filepath, sr=None, mono=True, duration=29.0)  # kaiser_fast
-        x = x.tolist()
-        if(len(x)<threshold):
-            raise ValueError('song length is shorter than threshold')
-        else:
-            x = x[:1278900]
-        x = np.array(x)
 
-        stft = np.abs(librosa.stft(x, n_fft=2048, hop_length=512))
-        mel = librosa.feature.melspectrogram(sr=sr, S=stft ** 2)
-        del stft
-        f = librosa.feature.mfcc(S=librosa.power_to_db(mel), n_mfcc=20)
-        # f.shape would be (20,2498)
+    successful_tids = []
+    successful_features = []
 
-    except Exception as e:
-        print('{}: {}'.format(tid, repr(e)))
-        return tid, 0
+    for tid in tids:
+        try:
+            filepath = get_audio_path('music/music_training', tid)
+            x, sr = librosa.load(filepath, sr=None, mono=True, duration=29.0)  # kaiser_fast
+            x = x.tolist()
+            if(len(x)<threshold):
+                raise ValueError('song length is shorter than threshold')
+            else:
+                x = x[:1278900]
+            x = np.array(x)
+
+            stft = np.abs(librosa.stft(x, n_fft=2048, hop_length=512))
+            mel = librosa.feature.melspectrogram(sr=sr, S=stft ** 2)
+            del stft
+            f = librosa.feature.mfcc(S=librosa.power_to_db(mel), n_mfcc=20)
+            # f.shape would be (20,2498)
+            successful_tids.append(tid)
+            successful_features.append(f.tolist)
+
+        except Exception as e:
+            print('{}: {}'.format(tid, repr(e)))
+            return tid, 0
 
 
-    return tid, f.tolist()
+    return successful_tids, successful_features
 
 def feature_examples(tid):
     # example of various librosa features

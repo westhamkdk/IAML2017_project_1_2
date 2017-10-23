@@ -40,7 +40,6 @@ with tf.Session() as sess:
     saver = tf.train.Saver()
 
 
-
     if is_train_mode:
         train_dataloader = DataLoader(file_path='dataset/track_metadata.csv', batch_size=batch_size,
                                       label_column_name=label_column_name, is_training=True)
