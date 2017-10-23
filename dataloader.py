@@ -8,7 +8,6 @@ import features
 class DataLoader():
     def __init__(self, file_path, batch_size, label_column_name, is_training = True):
         '''
-
         :param file_path: file path for track_metadata.csv
         :param batch_size:
         :param label_column_name: column name of label (project 1: track_genre_top, project 2: listens)

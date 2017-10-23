@@ -5,20 +5,6 @@ from scipy import stats
 import pandas as pd
 import librosa
 
-    # example for computing mfcc feature
-def get_mfcc_example(tids):
-    mfcc_list = []
-    try:
-        for tid in tids:
-            tid, feature = compute_mfcc_example(tid)
-            if feature ==0:
-                raise ValueError('tid %s has feature error')
-            else:
-                mfcc_list.append(feature)
-    except Exception as e:
-        print('{}: {}'.format(tid, repr(e)))
-
-    return np.array(mfcc_list)
 
 def compute_mfcc_example(tids):
     threshold = 1278900
