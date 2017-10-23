@@ -29,7 +29,7 @@ def compute_mfcc_example(tids):
             f = librosa.feature.mfcc(S=librosa.power_to_db(mel), n_mfcc=20)
             # f.shape would be (20,2498)
             successful_tids.append(tid)
-            successful_features.append(f.tolist)
+            successful_features.append(f.tolist())
 
         except Exception as e:
             print('{}: {}'.format(tid, repr(e)))
